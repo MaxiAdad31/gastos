@@ -9,7 +9,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            padding-bottom: 70px; /* Espacio para el navbar fijo en la parte inferior */
+            padding-bottom: 76px; /* Ajustado para el navbar inferior */
+        }
+        .navbar-bottom {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .navbar-bottom .navbar-nav {
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .navbar-bottom .nav-item {
+            flex: 1;
+            text-align: center;
+        }
+        .navbar-bottom .nav-link {
+            padding: .5rem 0;
+        }
+        .content-wrapper {
+            padding-bottom: 2rem;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
         }
         .navbar {
             padding: 0.5rem 1rem;
@@ -82,38 +123,27 @@
     <meta name="theme-color" content="#000000">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
-        <div class="container-fluid">
-            <a class="navbar-brand d-lg-none" href="{{ url_for('index') }}">Gestión Financiera</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav w-100 justify-content-around">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Mi Aplicación</a>
+            <ul class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Resumen</a>
+                        <a class="nav-link" href="{{ url_for('logout') }}">Cerrar sesión</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Iniciar sesión</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('listar_gastos') }}">Gastos</a>
+                        <a class="nav-link" href="{{ url_for('registro') }}">Registrarse</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('listar_ingresos') }}">Ingresos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('listar_tarjetas') }}">Tarjeta</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('listar_gastos_tarjeta') }}">Gastos Tarjeta</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('listar_categorias') }}">Categorías</a>
-                    </li>
-                </ul>
-            </div>
+                {% endif %}
+            </ul>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-4 content-wrapper">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
@@ -128,6 +158,31 @@
         {% block content %}{% endblock %}
     </div>
 
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand navbar-light bg-light navbar-bottom">
+        <div class="container-fluid">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i><br>Resumen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_gastos') }}"><i class="fas fa-money-bill-wave"></i><br>Gastos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_ingresos') }}"><i class="fas fa-piggy-bank"></i><br>Ingresos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_tarjetas') }}"><i class="fas fa-credit-card"></i><br>Tarjetas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('listar_categorias') }}"><i class="fas fa-th-list"></i><br>Categorías</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
     <div class="fab-container">
         <div class="fab-button" onclick="toggleFabOptions()">
             <i class="fas fa-plus"></i>
@@ -150,14 +205,31 @@
             </a>
         </div>
     </div>
+    {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-              .then((reg) => console.log('Service worker registrado', reg))
-              .catch((err) => console.log('Error al registrar service worker', err));
+        // Función para setear la fecha actual en los campos de fecha
+        function setCurrentDateOnDateInputs() {
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                if (!input.value) {
+                    input.value = today;
+                }
+            });
         }
+
+        // Ejecutar la función cuando el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', setCurrentDateOnDateInputs);
+
+        // Agregar evento de clic a los campos de fecha
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.addEventListener('click', function() {
+                if (!this.value) {
+                    this.value = new Date().toISOString().split('T')[0];
+                }
+            });
+        });
     </script>
     <script>
         function toggleFabOptions() {
