@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Categorías de Gastos</h1>
+<!-- <a href="{{ url_for('agregar_categoria') }}" class="btn btn-primary mb-3">Agregar Categoría</a>-->
+<div class="row">
+    {% for categoria in categorias %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ categoria.nombre }}</h5>
+                <a href="{{ url_for('editar_categoria', id=categoria.id) }}" class="btn btn-sm btn-link text-primary" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+                <form action="{{ url_for('eliminar_categoria', id=categoria.id) }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-link text-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este gasto?')" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>                
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

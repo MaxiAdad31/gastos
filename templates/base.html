@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestión Financiera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            padding-bottom: 70px; /* Espacio para el navbar fijo en la parte inferior */
+        }
+        .navbar {
+            padding: 0.5rem 1rem;
+        }
+        .navbar-brand {
+            font-size: 1.1rem;
+        }
+        .nav-link {
+            font-size: 0.9rem;
+        }
+        .table {
+            font-size: 0.9rem;
+        }
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.4rem;
+        }
+        @media (max-width: 767.98px) {
+            .navbar-nav {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+            .nav-item {
+                flex: 1;
+                text-align: center;
+            }
+        }
+        .fab-container {
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+            z-index: 999;
+        }
+        .fab-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        .fab-options {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            display: none;
+        }
+        .fab-options a {
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            background-color: #28a745;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            text-decoration: none;
+        }
+    </style>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-bottom">
+        <div class="container-fluid">
+            <a class="navbar-brand d-lg-none" href="{{ url_for('index') }}">Gestión Financiera</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav w-100 justify-content-around">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Resumen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_gastos') }}">Gastos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_ingresos') }}">Ingresos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_tarjetas') }}">Tarjeta</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_gastos_tarjeta') }}">Gastos Tarjeta</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_categorias') }}">Categorías</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="fab-container">
+        <div class="fab-button" onclick="toggleFabOptions()">
+            <i class="fas fa-plus"></i>
+        </div>
+        <div class="fab-options" id="fabOptions">
+            <a href="{{ url_for('agregar_gasto') }}" title="Agregar Gasto">
+                <i class="fas fa-money-bill-wave"></i>
+            </a>
+            <a href="{{ url_for('agregar_ingreso') }}" title="Agregar Ingreso">
+                <i class="fas fa-piggy-bank"></i>
+            </a>
+            <a href="{{ url_for('agregar_tarjeta') }}" title="Agregar Tarjeta">
+                <i class="fas fa-credit-card"></i>
+            </a>
+            <a href="{{ url_for('agregar_gasto_tarjeta') }}" title="Agregar Gasto con Tarjeta">
+                <i class="fa fa-list-alt"></i>
+            </a>
+            <a href="{{ url_for('agregar_categoria') }}" title="Agregar Cateogria">
+                <i class="fa fa-th-list"></i>
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+              .then((reg) => console.log('Service worker registrado', reg))
+              .catch((err) => console.log('Error al registrar service worker', err));
+        }
+    </script>
+    <script>
+        function toggleFabOptions() {
+            var options = document.getElementById('fabOptions');
+            options.style.display = options.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

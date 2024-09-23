@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Editar Tarjeta</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre:</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" value="{{ tarjeta.nombre }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="banco" class="form-label">Banco:</label>
+        <input type="text" name="banco" id="banco" class="form-control" value="{{ tarjeta.banco }}" required>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" name="es_adicional" id="es_adicional" class="form-check-input" {% if tarjeta.es_adicional %}checked{% endif %}>
+        <label for="es_adicional" class="form-check-label">Es Adicional</label>
+    </div>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Guardar Cambios
+    </button>
+    <a href="{{ url_for('listar_tarjetas') }}" class="btn btn-secondary">
+        <i class="fas fa-times"></i> Cancelar
+    </a>
+</form>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-credit-card"></i> Agregar Tarjeta</h1>
+<form method="POST">
+    <div class="mb-3">
+        <label for="nombre" class="form-label"><i class="bi bi-tag"></i> Nombre:</label>
+        <input type="text" name="nombre" id="nombre" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="banco" class="form-label"><i class="bi bi-bank"></i> Banco:</label>
+        <input type="text" name="banco" id="banco" class="form-control" required>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" name="es_adicional" id="es_adicional" class="form-check-input">
+        <label for="es_adicional" class="form-check-label"><i class="bi bi-person-plus"></i> Es Adicional</label>
+    </div>
+    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Agregar Tarjeta</button>
+    <a href="{{ url_for('listar_tarjetas') }}" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+</form>
+{% endblock %}
