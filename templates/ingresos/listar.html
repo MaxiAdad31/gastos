@@ -1,43 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1 class="mb-4">Registro de Ingresos</h1>
-
-{% if ingresos %}
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Fecha</th>
-                <th>Concepto</th>
-                <th>Importe</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ingreso in ingresos %}
-            <tr>
-                <td>{{ ingreso.fecha.strftime('%Y-%m-%d') }}</td>
-                <td>{{ ingreso.concepto }}</td>
-                <td>${{ "%.2f"|format(ingreso.importe) }}</td>
-                <td>
-                    <a href="{{ url_for('editar_ingreso', id=ingreso.id) }}" class="btn btn-sm btn-link text-primary" title="Editar">
-                        <i class="bi bi-pencil-square"></i>
-                    </a>
-                    <form action="{{ url_for('eliminar_ingreso', id=ingreso.id) }}" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-link text-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este gasto?')" title="Eliminar">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Lista de Ingresos</h2>
+                    <a href="{{ url_for('agregar_ingreso') }}" class="btn btn-primary btn-sm">Agregar Ingreso</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th>Importe</th>
+                                    <th>Categoría</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ingreso in ingresos %}
+                                <tr>
+                                    <td>{{ ingreso.fecha.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ ingreso.concepto }}</td>
+                                    <td>{{ ingreso.importe }}</td>
+                                    <td>{{ ingreso.categoria.nombre }}</td>
+                                    <td>
+                                        <a href="{{ url_for('editar_ingreso', id=ingreso.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                        <a href="{{ url_for('eliminar_ingreso', id=ingreso.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este ingreso?')">Eliminar</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-{% else %}
-<p class="alert alert-info">No hay ingresos registrados aún.</p>
-{% endif %}
-
-<!--<a href="{{ url_for('agregar_ingreso') }}" class="btn btn-success mt-3">Agregar Nuevo Ingreso</a>-->
 {% endblock %}
